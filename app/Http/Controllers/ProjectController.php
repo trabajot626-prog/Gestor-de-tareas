@@ -47,7 +47,9 @@ class ProjectController extends Controller
      */
     public function show(Project $project): View
     {
-        $this->authorize('view', $project);
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
 
         $tasks = $project->tasks()->latest()->get();
         $statuses = \App\Models\Task::getStatuses();
@@ -60,7 +62,9 @@ class ProjectController extends Controller
      */
     public function edit(Project $project): View
     {
-        $this->authorize('update', $project);
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
 
         return view('projects-edit', compact('project'));
     }
@@ -70,7 +74,9 @@ class ProjectController extends Controller
      */
     public function update(Request $request, Project $project): RedirectResponse
     {
-        $this->authorize('update', $project);
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -87,7 +93,9 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project): RedirectResponse
     {
-        $this->authorize('delete', $project);
+        if ($project->user_id !== auth()->id()) {
+            abort(403);
+        }
 
         $project->delete();
 
